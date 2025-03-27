@@ -1,5 +1,5 @@
 from pydantic import BaseModel, field_validator
-from utils.valid import valid_dob, valid_email, valid_mobile, valid_username,valid_otp
+from utils.valid import valid_dob, valid_email, valid_mobile, valid_username,valid_otp,valid_pass
 from typing import Optional
 
 
@@ -33,6 +33,13 @@ class UserCreate(BaseModel):
     def validate_email(cls, value):
         valid_email(value)
         return value
+    
+    @field_validator("passwords")
+    @classmethod
+    def validate_password(cls,value):
+        valid_pass(value)
+        return value
+
 
     @field_validator("date_of_birth")
     @classmethod
@@ -43,7 +50,24 @@ class UserCreate(BaseModel):
 class passchange(BaseModel):
     old_password:str
     new_password:str
+
+    @field_validator("old_password")
+    @classmethod
+    def validate_password(cls,value):
+        valid_pass(value)
+        return value
     
+    
+    @field_validator("new_password")
+    @classmethod
+    def validate_newpassword(cls,value):
+        valid_pass(value)
+        return value
+    
+
+
+
+
 class updateuser(BaseModel):
     first_name: str = None
     last_name: str = None 
@@ -82,12 +106,13 @@ class updateuser(BaseModel):
 class dashdata(BaseModel):
     address: Optional[str] = None
     date: Optional[str] = None
-
-    # @field_validator("date")
-    # @classmethod
-    # def validate_dob(cls, value):
-    #     valid_dob(value)
-    #     return value
+    
+    @field_validator("date")
+    @classmethod
+    def validate_dob(cls, value):
+        if value is not None:
+            valid_dob(value)
+        return value
 
 class Email(BaseModel):
     email: str
@@ -117,6 +142,16 @@ class OTP(BaseModel):
 class empass(BaseModel):
     email: str
     password: str
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value):
+        valid_email(value)
+        return value
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls,value):
+        valid_pass(value)
+        return value
             
-
-
