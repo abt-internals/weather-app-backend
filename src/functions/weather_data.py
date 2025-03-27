@@ -1,7 +1,12 @@
 from datetime import datetime, timedelta
 import requests
+import os 
+from dotenv import load_dotenv
 
-key="1ea2aa48d7374bfbba2113109252403"
+load_dotenv()
+
+
+key=os.getenv("key")
 Base_url="http://api.weatherapi.com/v1"
 
 async def get_weather(address:str):

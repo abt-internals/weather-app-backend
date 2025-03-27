@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends
-from interfaces.request import UserCreate,passchange,updateuser,dashdata,Email,OTP,empass      #request.py
+from interfaces.request import UserCreate,passchange,updateuser,Email,OTP,empass      #request.py
 from sqlalchemy.orm import Session
 from configs.postgres import get_db
 from queries.query import verifyotp,change_pass                      #query.py
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 #from utils.valid import                                                         #valid.py
-from functions.func import get_access_token,change_passd,update_userdata,get_weatherdata,forgot_pass,create_userdata,log_user #func.py
+from functions.func import get_access_token,change_passd,update_userdata,get_weatherdata,forgot_pass,create_userdata,log_user,resend #func.py
 
 router = APIRouter()
 
@@ -51,6 +51,11 @@ async def forgot_password(user_mail:Email,db: Session = Depends(get_db)):
 @router.post("/verifyotp")
 async def verify_otp(user:OTP,db: Session = Depends(get_db)):
     return await verifyotp(db,user)
+
+@router.post("/resendotp")
+async def resend_otp(user_mail:Email,db:Session=Depends(get_db)):
+    return await resend(db,user_mail) 
+
 
 @router.post("/resetpass")
 async def reset_password(user_pass:empass,db: Session = Depends(get_db)):
