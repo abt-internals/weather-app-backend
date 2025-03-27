@@ -1,0 +1,102 @@
+import re
+from fastapi import HTTPException
+
+from datetime import datetime, timedelta, timezone
+
+
+import jwt
+
+from jwt.exceptions import PyJWTError
+
+
+
+
+# Secret key for JWT
+SECRET_KEY = "e2afd725508881dbb4977ee55ee2444b645406d8b552ceec65295c6ec4fa88f2"
+
+# Algorithm for JWT
+ALGORITHM = "HS256"
+
+
+
+
+def valid_mobile(mobile:str):
+
+    if not re.match(r"^91\d{10}",mobile):
+
+        raise HTTPException(status_code=400,detail="Mobile number must be exactly 12 digits and should start with 91 ")
+    
+def valid_username(username:str):
+
+    if not re.match(r"\w{1,30}",username):
+
+        raise HTTPException(status_code=400,detail="Username should be 32 characters long and should contain no special characters except '_' ") 
+
+def valid_email(email:str):
+
+    if not re.match(r"^(?:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$", email) :
+
+        raise HTTPException(status_code=400,detail="Invalid Format !!! Email should contain '@' and should end with '.com' ")
+
+def valid_dob(date_of_birth:str):
+    
+        if not re.match(r"^(19|20)\d{2}/(0[1-9]|1[0-2])/([0-2][0-9]|3[0-1])$",date_of_birth):
+            
+            raise HTTPException(status_code=400,detail="Invalid Format !!! Date Should be in format YYYY/MM/DD. Month Should be below 12 and Date should be below 31")
+        
+# def valid_pass(password:str):
+#     if not re.match(r"")
+
+def valid_otp(otp:int):
+     
+     data=str(otp)
+     if not re.match(r"^\d{6}$",data):
+
+        raise HTTPException(status_code=400,detail="Invalid OTP !!! OTP is of 6 Digits")
+
+def create_access_token(data: dict):
+    log=data.copy()
+    log.update({"exp":datetime.now(timezone.utc)+timedelta(minutes=10)})
+    return jwt.encode(log, SECRET_KEY, algorithm=ALGORITHM)
+
+
+async def create_refresh_token(data: dict):
+    
+        log=data.copy()
+        log.update({"exp":datetime.now(timezone.utc)+timedelta(days=7)})
+        refresh_token=jwt.encode(log, SECRET_KEY, algorithm=ALGORITHM)
+        access_token=create_access_token(data)
+
+        return access_token,refresh_token
+
+
+
+def decode_token(token:str):
+    try:
+        #   if bol is True:
+        #     payload = jwt.decode(token, options={"verify_signature": False})
+        #     userid=payload.get("sub")
+        #     return int(userid)
+          
+          payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM],options={"verify_signature": False})
+          userid=payload.get("sub")
+          expiry=payload.get("exp")
+
+          if not userid:
+              raise HTTPException(status_code=400,detail="Invalid Token")
+          
+          if expiry<datetime.now(timezone.utc).timestamp():
+               raise HTTPException(status_code=400,detail="Token Expired !!!! Try refreshing token or login again.")
+          
+          
+          
+          return int(userid)
+          
+          
+    except PyJWTError:
+          raise HTTPException(status_code=400,detail="Invalid access or refresh Token")
+
+
+          
+    
+    
