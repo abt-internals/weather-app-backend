@@ -34,7 +34,7 @@ def valid_email(email:str):
 
 def valid_dob(date_of_birth:str):
     
-        if not re.match(r"^(19|20)\d{2}/(0[1-9]|1[0-2])/([0-2][1-9]|3[0-1])$",date_of_birth):
+        if not re.match(r"^(19|20)\d{2}/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])$",date_of_birth):
             
             raise HTTPException(status_code=400,detail="Invalid Format !!! Date Should be in format YYYY/MM/DD. Month Should be below 12 and Date should be below 31")
         
