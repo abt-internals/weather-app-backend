@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import requests
 import os 
 from dotenv import load_dotenv
+from fastapi import HTTPException
 
 load_dotenv()
 
@@ -38,6 +39,11 @@ async def get_weather_data(address: str, date: str):
                 "dt": date
             }
             response = requests.get(f"{Base_url}/future.json", params=params)
+
+        elif datetime.strptime(date, "%Y/%m/%d").date()>three_hundred_days_ahead:
+              
+              raise HTTPException(status_code=400, detail="Email is already present in database")
+        
         else:
             params = {
                 "key": key,

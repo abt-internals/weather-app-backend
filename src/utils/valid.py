@@ -24,7 +24,7 @@ def valid_username(username:str):
 
     if not re.match(r"^[\w.]{1,30}$",username):
 
-        raise HTTPException(status_code=400,detail="Username should be 32 characters long and should contain no special characters except '_' and '.'") 
+        raise HTTPException(status_code=400,detail="Username should be max 30 characters long and should contain no special characters except '_' and '.'") 
 
 def valid_email(email:str):
 
