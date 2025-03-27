@@ -2,10 +2,10 @@ import random
 
 from datetime import datetime,timedelta
 from utils.valid import decode_token, create_access_token,create_refresh_token
-from queries.query import get_refresh_token,update_password,update_user,get_temp_address,authenticate_email,store_otp,create_user,authenticate_user,store_refresh_token,check_token
+from queries.query import update_password,update_user,get_temp_address,authenticate_email,store_otp,create_user,authenticate_user,store_refresh_token,check_token
 from functions.weather_data import get_weather,get_weather_data
 from functions.otp import send_email
-from interfaces.request import Email,UserCreate,dashdata
+from interfaces.request import Email,UserCreate
 
 async def create_userdata(db,user_data:UserCreate):
     otp=random.randint(100000,999999)
@@ -75,3 +75,10 @@ async def forgot_pass(db,user_mail:Email):
     
     
 
+async def resend(db,user_mail:Email):
+    otp=random.randint(100000,999999)
+    expiry=datetime.now() + timedelta(minutes=5)
+    await store_otp(db,user_mail.email,otp,expiry)
+    message=" user verification !! "
+    email_status = await send_email(user_mail.email, otp,message)
+    return {"message": "OTP sent successfully", "email_status": email_status}

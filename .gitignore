@@ -9,5 +9,8 @@ wheels/
 # Virtual environments
 .venv
 
+# Passwords Keys
+.env
+
 # Ruff cache directory
 .ruff_cache/

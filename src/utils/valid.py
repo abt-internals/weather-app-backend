@@ -1,15 +1,9 @@
 import re
-from fastapi import HTTPException
-
 from datetime import datetime, timedelta, timezone
 
-
 import jwt
-
+from fastapi import HTTPException
 from jwt.exceptions import PyJWTError
-
-
-
 
 # Secret key for JWT
 SECRET_KEY = "e2afd725508881dbb4977ee55ee2444b645406d8b552ceec65295c6ec4fa88f2"
@@ -28,24 +22,25 @@ def valid_mobile(mobile:str):
     
 def valid_username(username:str):
 
-    if not re.match(r"\w{1,30}",username):
+    if not re.match(r"^[\w.]{1,30}$",username):
 
-        raise HTTPException(status_code=400,detail="Username should be 32 characters long and should contain no special characters except '_' ") 
+        raise HTTPException(status_code=400,detail="Username should be 32 characters long and should contain no special characters except '_' and '.'") 
 
 def valid_email(email:str):
 
-    if not re.match(r"^(?:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$", email) :
+    if not re.match(r"^[\w.]+@[\w]+\.\w{2,}", email) :
 
-        raise HTTPException(status_code=400,detail="Invalid Format !!! Email should contain '@' and should end with '.com' ")
+        raise HTTPException(status_code=400,detail="Invalid Format !!! Email should contain '@' and should contain 'gmail'or any other second-level domain should end with '.com' or any other domain ")
 
 def valid_dob(date_of_birth:str):
     
-        if not re.match(r"^(19|20)\d{2}/(0[1-9]|1[0-2])/([0-2][0-9]|3[0-1])$",date_of_birth):
+        if not re.match(r"^(19|20)\d{2}/(0[1-9]|1[0-2])/([0-2][1-9]|3[0-1])$",date_of_birth):
             
             raise HTTPException(status_code=400,detail="Invalid Format !!! Date Should be in format YYYY/MM/DD. Month Should be below 12 and Date should be below 31")
         
-# def valid_pass(password:str):
-#     if not re.match(r"")
+def valid_pass(password:str):
+    if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@])[A-Za-z\d@]{8,}$",password):
+            raise HTTPException(status_code=400,detail="Invalid Password Format!! Password should be atleast 8 character long and should contain Atleast one capital letter, small letter,digit,@")
 
 def valid_otp(otp:int):
      

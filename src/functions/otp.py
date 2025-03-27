@@ -1,9 +1,12 @@
 import smtplib
+import os 
+from dotenv import load_dotenv
 from email.mime.text import MIMEText
 
+load_dotenv()
 
-SENDER_EMAIL = "yadnyeshvinchurkar.abt@gmail.com"  #  Gmail
-SENDER_PASSWORD = "dlcy zbit zwjv lfmy"  # Generate App Password from Google
+SENDER_EMAIL = os.getenv("email") #  Gmail
+SENDER_PASSWORD = os.getenv("password")  # Generate App Password from Google
 
 
 async def send_email(to_email, otp,purpose):
