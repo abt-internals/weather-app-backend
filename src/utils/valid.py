@@ -51,7 +51,7 @@ def valid_otp(otp:int):
 
 def create_access_token(data: dict):
     log=data.copy()
-    log.update({"exp":datetime.now(timezone.utc)+timedelta(minutes=10)})
+    log.update({"exp":datetime.now(timezone.utc)+timedelta(days=5)})
     return jwt.encode(log, SECRET_KEY, algorithm=ALGORITHM)
 
 

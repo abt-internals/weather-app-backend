@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from models.databasemodel import User, Usercred, Useraddress, Userrefresh
 from interfaces.request import UserCreate,passchange,OTP,empass
 from fastapi import HTTPException
@@ -8,31 +9,43 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 async def create_user(db: Session, user_data: UserCreate):
-    new_user = User(first_name=user_data.first_name,
-        last_name=user_data.last_name,
-        username=user_data.username,
-        date_of_birth=datetime.strptime(user_data.date_of_birth, r"%Y/%m/%d").date(),
-        gender=user_data.gender,
-        )  
-    
-    new_user.credentials=Usercred(
-        email=user_data.email,
-        mobile=user_data.mobile,
-        passwords=pwd_context.hash(user_data.passwords))
-    
-    new_user.address=Useraddress(
-        temp_address=user_data.temp_address,
-        perm_address=user_data.perm_address)
-    
-    new_user.refresh=Userrefresh(
-        refresh_token="")
+    try :
+        new_user = User(first_name=user_data.first_name,
+            last_name=user_data.last_name,
+            username=user_data.username,
+            date_of_birth=datetime.strptime(user_data.date_of_birth, r"%Y/%m/%d").date(),
+            gender=user_data.gender,
+            )  
+        
+        new_user.credentials=Usercred(
+            email=user_data.email,
+            mobile=user_data.mobile,
+            passwords=pwd_context.hash(user_data.passwords))
+        
+        new_user.address=Useraddress(
+            temp_address=user_data.temp_address,
+            perm_address=user_data.perm_address)
+        
+        new_user.refresh=Userrefresh(
+            refresh_token="")
 
+        
 
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except IntegrityError as e:
 
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    
+        db.rollback()
+        if user_data.email in str(e.orig):
+            raise HTTPException(status_code=400, detail="Email is already present in database")
+        
+        elif user_data.username in str(e.orig):
+            raise HTTPException(status_code=400, detail="Username is already present in database")
+
+        elif user_data.mobile in str(e.orig):
+            raise HTTPException(status_code=400, detail="Mobile no. is already present in database")
+
     return {"message":"User Created Successfully"}
 
 async def store_refresh_token(db: Session,refresh_token:str,user_id:int):
@@ -89,7 +102,9 @@ async def authenticate_user(db: Session, email: str, password: str):
 
 
 async def authenticate_email(db: Session, email:str):
+
     user = db.query(Usercred).filter(Usercred.email == email).first()
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user.id
