@@ -24,7 +24,7 @@ def valid_username(username:str):
 
     if not re.match(r"^[\w.]{1,30}$",username):
 
-        raise HTTPException(status_code=400,detail="Username should be 32 characters long and should contain no special characters except '_' and '.'") 
+        raise HTTPException(status_code=400,detail="Username should be max 30 characters long and should contain no special characters except '_' and '.'") 
 
 def valid_email(email:str):
 
@@ -34,7 +34,7 @@ def valid_email(email:str):
 
 def valid_dob(date_of_birth:str):
     
-        if not re.match(r"^(19|20)\d{2}/(0[1-9]|1[0-2])/([0-2][1-9]|3[0-1])$",date_of_birth):
+        if not re.match(r"^(19|20)\d{2}/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])$",date_of_birth):
             
             raise HTTPException(status_code=400,detail="Invalid Format !!! Date Should be in format YYYY/MM/DD. Month Should be below 12 and Date should be below 31")
         
@@ -51,7 +51,7 @@ def valid_otp(otp:int):
 
 def create_access_token(data: dict):
     log=data.copy()
-    log.update({"exp":datetime.now(timezone.utc)+timedelta(minutes=10)})
+    log.update({"exp":datetime.now(timezone.utc)+timedelta(days=5)})
     return jwt.encode(log, SECRET_KEY, algorithm=ALGORITHM)
 
 

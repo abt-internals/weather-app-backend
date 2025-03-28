@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+asyncpg
+alembic
+psycopg2
+python-dotenv
+passlib[bcrypt]
+pyjwt
+email-validator
+httpx
+bcrypt
+starlette
+uv
