@@ -7,7 +7,7 @@ alembic
 psycopg2
 python-dotenv
 passlib[bcrypt]
-jwt
+PyJWT
 email-validator
 httpx
 bcrypt
