@@ -1,13 +1,14 @@
-from sqlalchemy import Column, Integer, String,Date,ForeignKey,Boolean,TIMESTAMP
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Boolean, TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = "userInfo"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
@@ -23,7 +24,7 @@ class User(Base):
 
 class Usercred(Base):
     __tablename__ = "userCred"
-    
+
     id = Column(Integer, ForeignKey("userInfo.id"), primary_key=True, index=True)
     email = Column(String, unique=True, nullable=False)
     mobile = Column(String, unique=True, nullable=False)
@@ -41,7 +42,7 @@ class Useraddress(Base):
 
     id = Column(Integer, ForeignKey("userInfo.id"), primary_key=True, index=True)
     temp_address = Column(String, nullable=False)
-    perm_address = Column(String, nullable=False)   
+    perm_address = Column(String, nullable=False)
 
     # Relationship
     user = relationship("User", back_populates="address", uselist=False)
@@ -49,12 +50,9 @@ class Useraddress(Base):
 
 class Userrefresh(Base):
     __tablename__ = "userRefresh"
-    
+
     id = Column(Integer, ForeignKey("userInfo.id"), primary_key=True, index=True)
     refresh_token = Column(String, nullable=True, default=None)
-    
+
     # Relationship
     user = relationship("User", back_populates="refresh", uselist=False)
-
-
-    
